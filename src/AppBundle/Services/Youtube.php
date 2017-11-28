@@ -5,6 +5,7 @@ namespace AppBundle\Services;
 use \GuzzleHttp\Client;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\Videos;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class Youtube
 {
@@ -17,7 +18,7 @@ class Youtube
         $this->em = $em;
     }
 
-    public function getapi()
+    public function getNew()
     {
         $client = new Client();
         $res = $client->request('GET', 'https://www.googleapis.com/youtube/v3/search?part=id&channelId=UCrFx0KTUzpDQY2mkLWoIdyg&publishedAfter=2017-10-02T00%3A00%3A00Z&key=AIzaSyBR7D0zD3jh9RTiQuXrGapwSwFdmlnuT5w');
@@ -26,7 +27,10 @@ class Youtube
             $result = $this->videoRepository->findOneByVideoid($item->id->videoId);
             if ($result == NULL) {
                 $videos = new Videos();
-                echo 'null<br>';
+                $videos->setDate(new \DateTime("now"));
+                $videos->setVideoid($item->id->videoId);
+                $this->em->persist($videos);
+                $this->em->flush();
             }
         }
     }
