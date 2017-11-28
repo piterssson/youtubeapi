@@ -1,3 +1,9 @@
 services:
+    videos.repository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Videos
     youtube.service:
         class: AppBundle\Services\Youtube
+        arguments: ["@videos.repository", "@doctrine.orm.entity_manager"]
